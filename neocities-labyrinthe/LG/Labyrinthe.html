@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menu Principal</title>
+    <style>
+    body {
+      font-size: 16px;display: flex;justify-content: center;align-items: center;flex-direction: column;height: 100vh;margin: 0; background-image: url('ppL/fond.WebP');background-size: cover; /* L'image couvre tout l'espace disponible */background-position: center; /* Centre l'image */
+  }
+  
+  .menu-container {
+      display: flex;flex-direction: column;gap: 20px;
+      
+  }
+  
+  h1 {
+      font-size: 48px; margin-bottom: 20px;color: #000;
+  }
+  
+  button {
+    
+      background: #444;color: #77b5fe;flex-direction: column;height: 40px;
+      
+      
+  }
+  
+  
+  button:hover {
+      background: #666;
+      transform: scale(1.05, 1.05);
+  }
+    </style>
+    
+</head>
+<body>
+        <div class="menu-container">
+        <h1>Labyrinthe</h1>
+        <button onclick="location.href='solo.html'">play 1 player</button>
+        <button onclick="location.href='multiVG.html'">play 2 player</button>
+        <button onclick="location.href='solo.html'">option</button>
+    </div>
+</body>
+</html>
