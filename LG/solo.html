@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Labyrinthe</title>
     <style>
-    
        body {
             touch-action: manipulation;
             overflow-x: hidden;
@@ -21,22 +20,15 @@
             background-size: cover; 
             background-repeat: no-repeat; 
             background-position: center;
-}
+        }
         canvas {
-            
             background: #1b183b;
-            border: 2px solid white; /* optionnel : bordure pour visualiser le labyrinthe */
-            position: relative; /* nécessaire si vous voulez ajouter des éléments positionnés à l'intérieur */
-            
-            
-             
-            
+            border: 2px solid white;
+            position: relative;
         }
         .controls {
             display: flex;
             grid-template-columns: 50px 50px 50px;
-            
-            
         }
         .button {
             width: 50px;
@@ -60,7 +52,7 @@
             align-items: center;
         }
         .return-button {
-            position: fixed; 
+            position: fixed;
             background: #444;
             font-size: 18px;
             border-radius: 5px;
@@ -70,7 +62,7 @@
             color: #77b5fe
         }
         
-         #score {
+        #score {
             font-size: 20px;
             color: white;
             margin-bottom: 10px;
@@ -78,27 +70,23 @@
     </style>
 </head>
 <body>
-
-        <button id="Labyrinthe" class="return-button">Accueil</button>
-    
-
-        <div id="score">Score: 0</div> <!-- Affichage du score -->
-        <canvas id="playerGame"></canvas>
-        <div class="controls">
+    <button id="Labyrinthe" class="return-button">Accueil</button>
+    <div id="score">Score: 0</div>
+    <canvas id="playerGame"></canvas>
+    <div class="controls">
         <div></div>
         <button class="button" id="up">↑</button>
         <button class="button" id="left">←</button>
         <button class="button" id="down">↓</button>
         <button class="button" id="right">→</button>
-        </div>
-        
-    
-    <script>   
+    </div>
+
+    <script>
         const canvas = document.getElementById("playerGame");
         const context = canvas.getContext("2d");
         const gridSize = 50;
-        const canvasWidth = 600;
-        const canvasHeight = 500;
+        const canvasWidth = window.innerWidth * 0.6;  // Adapte la taille du canvas à l'écran
+        const canvasHeight = window.innerHeight * 0.84;
         canvas.width = canvasWidth;
         canvas.height = canvasHeight;
 
@@ -109,7 +97,6 @@
         const itemImage = new Image();
         itemImage.src = "ppL/hugoat.WebP";
         
-        
         document.getElementById("Labyrinthe").addEventListener("click", () => {
             window.location.href = "Labyrinthe.html";
         });
@@ -118,35 +105,24 @@
         const mazeHeight = 30;
         const numberOfEnemies = 3;
         let maze = generateMaze();
-
         const player = { x: Math.floor(mazeWidth / 2), y: Math.floor(mazeHeight / 2), size: gridSize, direction: null, image: playerImage };
         const directions = { LEFT: [-1, 0], RIGHT: [1, 0], UP: [0, -1], DOWN: [0, 1] };
         const enemies = generateEnemies();
 
-        let item = generateItem(); // Génération de l'item
+        let item = generateItem();
         let camera = { x: player.x * gridSize, y: player.y * gridSize };
-
-        // Système de score
         let score = 0;
-
-        // Variables pour ralentir les ennemis
         let enemySpeed = 5;
         let enemyCounter = 0;
 
         function generateMaze() {
-    const maze = Array.from({ length: mazeHeight }, () => 
-        Array.from({ length: mazeWidth }, () => Math.random() > 0.3 ? 0 : 1)
-    );
-
-    // Assure que le point de départ (1, 1) est accessible
-    maze[1][1] = 0;
-
-    // Assurer que la sortie (coin inférieur droit) est accessible
-    maze[mazeHeight - 2][mazeWidth - 2] = 0;
-
-    return maze;
-}
-
+            const maze = Array.from({ length: mazeHeight }, () => 
+                Array.from({ length: mazeWidth }, () => Math.random() > 0.3 ? 0 : 1)
+            );
+            maze[1][1] = 0;
+            maze[mazeHeight - 2][mazeWidth - 2] = 0;
+            return maze;
+        }
 
         function generateEnemies() {
             const enemies = [];
@@ -165,14 +141,12 @@
             do {
                 x = Math.floor(Math.random() * mazeWidth);
                 y = Math.floor(Math.random() * mazeHeight);
-            } while (maze[y] && maze[y][x] === 1); // Assurez-vous que l'item est placé sur une case libre
+            } while (maze[y] && maze[y][x] === 1);
             return { x, y, size: gridSize, image: itemImage };
         }
 
         function draw() {
             context.clearRect(0, 0, canvas.width, canvas.height);
-
-            // Dessiner le labyrinthe
             for (let y = 0; y < mazeHeight; y++) {
                 for (let x = 0; x < mazeWidth; x++) {
                     if (maze[y][x] === 1) {
@@ -182,85 +156,75 @@
                 }
             }
 
-            // Dessiner l'item
-            context.save(); // Sauvegarde l'état actuel du contexte
-            context.globalAlpha = 1.0; // Assurez-vous que l'opacité est à 100%
             context.drawImage(item.image, item.x * gridSize - camera.x, item.y * gridSize - camera.y, item.size, item.size);
-            context.restore();
-
-            // Dessiner le joueur
             context.drawImage(player.image, player.x * gridSize - camera.x, player.y * gridSize - camera.y, player.size, player.size);
 
-            // Dessiner les ennemis
             enemies.forEach(enemy => {
                 context.drawImage(enemy.image, enemy.x * gridSize - camera.x, enemy.y * gridSize - camera.y, enemy.size, enemy.size);
             });
         }
 
-       function update() {
-    if (player.direction) {
-        const [dx, dy] = directions[player.direction];
-        const newX = player.x + dx;
-        const newY = player.y + dy;
+        function update() {
+            if (player.direction) {
+                const [dx, dy] = directions[player.direction];
+                const newX = player.x + dx;
+                const newY = player.y + dy;
 
-        // Vérifiez si le joueur peut se déplacer dans la direction donnée
-        if (maze[newY] && maze[newY][newX] !== 1) {
-            player.x = newX;
-            player.y = newY;
-        }
+                if (maze[newY] && maze[newY][newX] !== 1) {
+                    player.x = newX;
+                    player.y = newY;
+                }
+                camera.x = player.x * gridSize - canvasWidth / 2;
+                camera.y = player.y * gridSize - canvasHeight / 2;
+                player.direction = null;
+            }
 
-        // La caméra suit directement le joueur sans contrainte
-        camera.x = player.x * gridSize - canvasWidth / 2;
-        camera.y = player.y * gridSize - canvasHeight / 2;
-
-        player.direction = null;
-    
-    // Reste de la fonction `update` (gestion des ennemis, score, etc.)
-}
-
-
-            // Ralentir le mouvement des ennemis
             if (enemyCounter % enemySpeed === 0) {
                 enemies.forEach(enemy => {
                     if (!enemy.direction || !directions[enemy.direction]) {
                         chooseRandomDirection(enemy);
                     }
 
-                    const [dx, dy] = directions[enemy.direction];
-                    const newX = enemy.x + dx;
-                    const newY = enemy.y + dy;
+                    // Assurez-vous que la direction de l'ennemi est valide
+                    if (enemy.direction && directions[enemy.direction]) {
+                        const [dx, dy] = directions[enemy.direction];
+                        const newX = enemy.x + dx;
+                        const newY = enemy.y + dy;
 
-                    if (maze[newY] && maze[newY][newX] !== 1) {
-                        enemy.x = newX;
-                        enemy.y = newY;
-                    } else {
-                        enemy.direction = null;
-                    }
+                        if (maze[newY] && maze[newY][newX] !== 1) {
+                            enemy.x = newX;
+                            enemy.y = newY;
+                        } else {
+                            enemy.direction = null;
+                        }
 
-                    if (Math.round(player.x) === Math.round(enemy.x) && Math.round(player.y) === Math.round(enemy.y)) {
-                        alert("Game Over! Vous avez été attrapé !");
-                        resetGame();
+                        if (Math.round(player.x) === Math.round(enemy.x) && Math.round(player.y) === Math.round(enemy.y)) {
+                            alert("Game Over! Vous avez été attrapé !");
+                            resetGame();
+                        }
                     }
                 });
             }
-
             enemyCounter++;
 
-            // Vérifiez si le joueur récupère l'item
             if (Math.round(player.x) === Math.round(item.x) && Math.round(player.y) === Math.round(item.y)) {
-                score += 10; // Augmentez le score
-                document.getElementById("score").textContent = `Score: ${score}`; // Mettez à jour l'affichage
-                item = generateItem(); // Générer un nouvel item
+                score += 10;
+                document.getElementById("score").textContent = `Score: ${score}`;
+                item = generateItem();
             }
 
             draw();
         }
-          
+
         function chooseRandomDirection(entity) {
             const possibleDirections = ['UP', 'DOWN', 'LEFT', 'RIGHT'];
             const randomDirection = possibleDirections[Math.floor(Math.random() * possibleDirections.length)];
+
             if (canMoveInDirection(entity, randomDirection)) {
                 entity.direction = randomDirection;
+            } else {
+                // Si l'ennemi ne peut pas se déplacer dans la direction aléatoire, réessayez.
+                chooseRandomDirection(entity);
             }
         }
 
@@ -279,7 +243,7 @@
             enemies.length = 0;
             enemies.push(...generateEnemies());
             item = generateItem();
-            score = 0; // Réinitialiser le score
+            score = 0;
             document.getElementById("score").textContent = `Score: ${score}`;
             camera.x = player.x * gridSize;
             camera.y = player.y * gridSize;
@@ -297,7 +261,12 @@
         document.getElementById("left").addEventListener("click", () => player.direction = 'LEFT');
         document.getElementById("right").addEventListener("click", () => player.direction = 'RIGHT');
 
-        setInterval(update, 1000 / 30);
+        function gameLoop() {
+            update();
+            requestAnimationFrame(gameLoop);
+        }
+
+        gameLoop();  // Start the game loop
     </script>
 </body>
 </html>
