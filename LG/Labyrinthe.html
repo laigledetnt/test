@@ -20,25 +20,44 @@
   
   button {
     
-      background: #444;color: #77b5fe;flex-direction: column;height: 40px;
-      
+    background: #444;
+            font-size: 25px;
+            border-radius: 5px;
+            cursor: pointer;
+            left: 50px;
+            top: 10px;
+            color: #77b5fe
       
   }
   
   
   button:hover {
-      background: #666;
-      transform: scale(1.05, 1.05);
+      background: #373a51;
+      transform: scale(1.06, 1.06);
   }
+  .return-button {
+            position: fixed;
+            background: #444;
+            font-size: 18px;
+            border-radius: 5px;
+            cursor: pointer;
+            left: 5px;
+            color: #77b5fe
+        }
     </style>
     
 </head>
+
 <body>
+    
+                    
+        <button onclick="location.href='/index.html'"class="return-button">Launcher</button>     
         <div class="menu-container">
         <h1>Labyrinthe</h1>
-        <button onclick="location.href='solo.html'">play 1 player</button>
+        <button onclick="location.href='solo.html'">play solo</button>
         <button onclick="location.href='multiVG.html'">play 2 player</button>
-        <button onclick="location.href='option.html'">...</button> 
+        <button onclick="location.href='solo.html'">option</button>
+        
     </div>
 </body>
 </html>
