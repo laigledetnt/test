@@ -115,14 +115,29 @@
         let enemySpeed = 5;
         let enemyCounter = 0;
 
+        labyrinthe
         function generateMaze() {
-            const maze = Array.from({ length: mazeHeight }, () => 
-                Array.from({ length: mazeWidth }, () => Math.random() > 0.3 ? 0 : 1)
-            );
+            const maze = [];
+            for (let y = 0; y < mazeHeight; y++) {
+                maze[y] = [];
+                for (let x = 0; x < mazeWidth; x++) {
+                    maze[y][x] = Math.random() > 0.3 ? 0 : 1;
+                }
+            }
             maze[1][1] = 0;
-            maze[mazeHeight - 2][mazeWidth - 2] = 0;
+            floodFill(maze, 1, 1);  // S'assurer qu'il y a un chemin accessible
             return maze;
         }
+
+        // Algorithme de Flood Fill pour s'assurer que toutes les cases sont accessibles
+        accessibles
+        function floodFill(maze, startX, startY) {
+            const stack = [[startX, startY]];
+            const visited = Array.from({ length: mazeHeight }, () => Array(mazeWidth).fill(false));
+            visited[startY][startX] = true;
+
+            while (stack.length > 0) {
+                const [x, y] = stack.pop();
 
         function generateEnemies() {
             const enemies = [];
