@@ -57,8 +57,8 @@
             font-size: 18px;
             border-radius: 5px;
             cursor: pointer;
-            left: 50px;
-            top: 10px;
+            left: 10px;
+            top: 4px;
             color: #77b5fe
         }
         
@@ -71,7 +71,7 @@
 </head>
 <body>
     <button id="Labyrinthe" class="return-button">Accueil</button>
-    <div id="score">Score: 0</div>
+    <div id="score">Score : 0</div>
     <canvas id="playerGame"></canvas>
     <div class="controls">
         <div></div>
@@ -84,7 +84,7 @@
     <script>
         const canvas = document.getElementById("playerGame");
         const context = canvas.getContext("2d");
-        const gridSize = 50;
+        const gridSize = 40;
         const canvasWidth = window.innerWidth * 0.7;  // Adapte la taille du canvas à l'écran
         const canvasHeight = window.innerHeight * 0.84;
         canvas.width = canvasWidth;
@@ -115,29 +115,14 @@
         let enemySpeed = 5;
         let enemyCounter = 0;
 
-        
         function generateMaze() {
-            const maze = [];
-            for (let y = 0; y < mazeHeight; y++) {
-                maze[y] = [];
-                for (let x = 0; x < mazeWidth; x++) {
-                    maze[y][x] = Math.random() > 0.3 ? 0 : 1;
-                }
-            }
+            const maze = Array.from({ length: mazeHeight }, () => 
+                Array.from({ length: mazeWidth }, () => Math.random() > 0.3 ? 0 : 1)
+            );
             maze[1][1] = 0;
-            floodFill(maze, 1, 1);  // S'assurer qu'il y a un chemin accessible
+            maze[mazeHeight - 2][mazeWidth - 2] = 0;
             return maze;
         }
-
-        // Algorithme de Flood Fill pour s'assurer que toutes les cases sont accessibles
-        accessibles
-        function floodFill(maze, startX, startY) {
-            const stack = [[startX, startY]];
-            const visited = Array.from({ length: mazeHeight }, () => Array(mazeWidth).fill(false));
-            visited[startY][startX] = true;
-
-            while (stack.length > 0) {
-                const [x, y] = stack.pop();
 
         function generateEnemies() {
             const enemies = [];
@@ -214,7 +199,7 @@
                         }
 
                         if (Math.round(player.x) === Math.round(enemy.x) && Math.round(player.y) === Math.round(enemy.y)) {
-                            alert("Game Over! Vous avez été attrapé !");
+                           
                             resetGame();
                         }
                     }
@@ -254,7 +239,7 @@
         function resetGame() {
             player.x = Math.floor(mazeWidth / 2);
             player.y = Math.floor(mazeHeight / 2);
-            maze = generateMaze();
+            
             enemies.length = 0;
             enemies.push(...generateEnemies());
             item = generateItem();
