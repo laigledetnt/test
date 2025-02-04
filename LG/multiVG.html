@@ -123,7 +123,6 @@
         }
 
         // Algorithme de Flood Fill pour s'assurer que toutes les cases sont accessibles
-        accessibles
         function floodFill(maze, startX, startY) {
             const stack = [[startX, startY]];
             const visited = Array.from({ length: mazeHeight }, () => Array(mazeWidth).fill(false));
