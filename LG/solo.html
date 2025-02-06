@@ -101,9 +101,9 @@
             window.location.href = "Labyrinthe.html";
         });
 
-        const mazeWidth = 30;
-        const mazeHeight = 30;
-        const numberOfEnemies = 3;
+        const mazeWidth = 50;
+        const mazeHeight = 50;
+        const numberOfEnemies = 4;
         let maze = generateMaze();
         const player = { x: Math.floor(mazeWidth / 2), y: Math.floor(mazeHeight / 2), size: gridSize, direction: null, image: playerImage };
         const directions = { LEFT: [-1, 0], RIGHT: [1, 0], UP: [0, -1], DOWN: [0, 1] };
@@ -186,7 +186,7 @@
             for (let y = 0; y < mazeHeight; y++) {
                 for (let x = 0; x < mazeWidth; x++) {
                     if (maze[y][x] === 1) {
-                        context.fillStyle = '#665';
+                        context.fillStyle = '#555';
                         context.fillRect(x * gridSize - camera.x, y * gridSize - camera.y, gridSize, gridSize);
                     }
                 }
@@ -210,8 +210,9 @@
                     player.x = newX;
                     player.y = newY;
                 }
-                camera.x = player.x * gridSize - canvasWidth / 2;
-                camera.y = player.y * gridSize - canvasHeight / 2;
+                camera.x = Math.round(player.x * gridSize - canvasWidth / 2);
+                camera.y = Math.round(player.y * gridSize - canvasHeight / 2);
+
                 player.direction = null;
             }
 
