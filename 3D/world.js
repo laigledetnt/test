@@ -12,9 +12,8 @@ const walls = {};
 let activatedButtons = 0;
 let requiredButtons = 0;
 let score = 0;
-let sceneRef; // ✅ Stocke la scène globalement
+let sceneRef;
 
-// ✅ Création de l'élément HTML pour afficher le score
 const scoreElement = document.createElement("div");
 scoreElement.id = "score";
 scoreElement.style.position = "absolute";
@@ -22,15 +21,13 @@ scoreElement.style.top = "10px";
 scoreElement.style.left = "10px";
 scoreElement.style.color = "black";
 scoreElement.style.fontSize = "20px";
-scoreElement.style.fontSize = "20px";
 scoreElement.style.userSelect = "none";
 scoreElement.innerHTML = "item collectés : 0";
 
 document.body.appendChild(scoreElement);
 
-// 📌 Charger le monde 3D et ajouter des collisions
 export function loadWorld(scene) {
-    sceneRef = scene; // ✅ Stocker la scène globale
+    sceneRef = scene;
 
     const loader = new GLTFLoader();
     loader.load('world.glb', (gltf) => {
@@ -39,12 +36,8 @@ export function loadWorld(scene) {
 
         model.traverse((child) => {
             if (child.isMesh) {
-                console.log("📦 Ajout de collision à :", child.name);
-
-                // ✅ Générer un mur au-dessus de chaque `p_X`
                 if (child.name.startsWith("p_")) {
                     const number = child.name.split("_")[1];
-
                     const wallGeometry = new THREE.BoxGeometry(10, 10, 0.5);
                     const wallMaterial = new THREE.MeshStandardMaterial({ color: 0x00ffff });
                     const wallMesh = new THREE.Mesh(wallGeometry, wallMaterial);
@@ -58,13 +51,8 @@ export function loadWorld(scene) {
 
                     walls[number] = { mesh: wallMesh, body: wallBody };
                     requiredButtons++;
-                    console.log(`🧱 Mur créé au-dessus de p_${number}`);
-                } 
-                
-                // ✅ Détecter les boutons `b_X`
-                else if (child.name.startsWith("b_")) {
+                } else if (child.name.startsWith("b_")) {
                     const number = child.name.split("_")[1];
-
                     const buttonGeometry = new THREE.BoxGeometry(0.9, 0.5, 0.9);
                     const buttonMaterial = new THREE.MeshStandardMaterial({ color: 0xff0602 });
                     const buttonMesh = new THREE.Mesh(buttonGeometry, buttonMaterial);
@@ -72,109 +60,47 @@ export function loadWorld(scene) {
                     scene.add(buttonMesh);
 
                     buttons[number] = { mesh: buttonMesh, activated: false };
-                    console.log(`🔘 Bouton b_${number} ajouté.`);
-                } 
-                
-                // ✅ Ajouter les objets récupérables (`item_`)
-                else if (child.name.startsWith("item_")) {
-                    console.log(`🎯 Objet récupérable détecté : ${child.name}`);
-                
-                    // 🔹 Récupérer la position réelle de l'objet dans la scène
+                } else if (child.name.startsWith("item_")) {
                     const itemPosition = new THREE.Vector3();
                     child.getWorldPosition(itemPosition);
-                
-                    // 🔹 Modifier la position de l'item
-                    const newX = itemPosition.x;  // Décale de 1 unité à droite
-                    const newY = itemPosition.y + 1;  // Décale de 2 unités en hauteur
-                    const newZ = itemPosition.z;  // Décale de 1 unité en arrière
-                
-                    console.log(`📌 Nouvelle position de l'item : X=${newX}, Y=${newY}, Z=${newZ}`);
-                
-                    // ✅ Création du mesh visuel
+                    const newX = itemPosition.x;
+                    const newY = itemPosition.y + 1;
+                    const newZ = itemPosition.z;
+
                     const collectibleGeometry = new THREE.SphereGeometry(0.5);
                     const collectibleMaterial = new THREE.MeshStandardMaterial({ color: 0xffcc00 });
                     const collectibleMesh = new THREE.Mesh(collectibleGeometry, collectibleMaterial);
                     collectibleMesh.position.set(newX, newY, newZ);
                     scene.add(collectibleMesh);
-                
-                    // ✅ Création du corps physique (Cannon.js)
+
                     const itemShape = new CANNON.Sphere(0.5);
                     const itemBody = new CANNON.Body({
                         mass: 0,
                         shape: itemShape,
-                        position: new CANNON.Vec3(newX, newY, newZ) // ✅ Assurez-vous que c'est bien la même position
+                        position: new CANNON.Vec3(newX, newY, newZ)
                     });
                     world.addBody(itemBody);
-                
-                    // ✅ Ajouter à la liste des items
                     items.push({ mesh: collectibleMesh, body: itemBody });
                 }
-                
 
-                // ✅ Générer des collisions pour les autres objets
-                else {
-                    //  Récupérer la géométrie et la boîte englobante locale
-                    child.geometry.computeBoundingBox();
-                    const bbox = child.geometry.boundingBox.clone();
-                
-                    //  Transformer la boîte pour prendre en compte l'échelle et la rotation
-                    const size = new THREE.Vector3();
-                    bbox.getSize(size);
-                    size.multiply(child.scale); // 🔥 Prendre en compte l'échelle de l'objet !
-                
-                    //  Récupérer la position et la rotation GLOBALE
-                    child.updateMatrixWorld(true);
-                    const worldPosition = new THREE.Vector3();
-                    const worldQuaternion = new THREE.Quaternion();
-                    child.getWorldPosition(worldPosition);
-                    child.getWorldQuaternion(worldQuaternion);
-                
-                    //  Créer la boîte de collision Cannon.js avec la vraie taille
-                    const halfExtents = new CANNON.Vec3(size.x / 2, size.y / 2, size.z / 2);
-                    const shape = new CANNON.Box(halfExtents);
-                
-                    //  Appliquer la rotation exacte
-                    const body = new CANNON.Body({ mass: 0 });
-                    body.addShape(shape);
-                    body.position.copy(worldPosition);
-                    body.quaternion.copy(worldQuaternion); 
-                
-                    world.addBody(body);
-                
-                    //  Débogage visuel
-                    /*const debugMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000, wireframe: true });
-                    const debugBox = new THREE.Mesh(new THREE.BoxGeometry(size.x, size.y, size.z), debugMaterial);
-                    debugBox.position.copy(worldPosition);
-                    debugBox.quaternion.copy(worldQuaternion);
-                    scene.add(debugBox);*/
-                }
                 const textureLoader = new TextureLoader();
                 textureLoader.load('sky.jpg', (texture) => {
                     texture.mapping = THREE.EquirectangularReflectionMapping;
                     scene.background = texture;
                 });
-                
             }
         });
     });
 }
 
-//  Vérifier si le joueur clique sur un bouton
 function onMouseClick(event) {
-    if (!sceneRef) {
-        console.error(" ERREUR : La scène n'est pas définie !");
-        return;
-    }
+    if (!sceneRef) return;
 
     const raycaster = new THREE.Raycaster();
     const mouse = new THREE.Vector2();
-
-    //  Calculer la position du clic
     mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
     mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-
     raycaster.setFromCamera(mouse, camera);
-
     const buttonMeshes = Object.values(buttons).map(btn => btn.mesh);
     const intersects = raycaster.intersectObjects(buttonMeshes);
 
@@ -182,74 +108,58 @@ function onMouseClick(event) {
         const clickedButton = intersects[0].object;
         for (let key in buttons) {
             if (buttons[key].mesh === clickedButton && !buttons[key].activated) {
-                console.log(` Bouton ${key} activé !`);
                 buttons[key].activated = true;
                 activatedButtons++;
+                buttons[key].mesh.material.color.set(0x80ff00);
 
-                //  Changer la couleur du bouton pour indiquer qu'il est activé
-                buttons[key].mesh.material.color.set( 0x80ff00);
-
-                //  Supprimer le mur associé (s'il existe)
                 if (walls[key]) {
-                    console.log(`🚪 Suppression du mur ${key}`);
                     sceneRef.remove(walls[key].mesh);
                     world.removeBody(walls[key].body);
-                    delete walls[key]; //  Supprimer l'objet de la liste
+                    delete walls[key];
                 }
             }
         }
     }
 }
 
-//  Ajouter un écouteur pour détecter les clics
 window.addEventListener("click", onMouseClick);
 
-//  Vérifier si le joueur récupère un objet
 export function checkItemCollection() {
-    if (!sceneRef) {
-        console.error("⚠️ ERREUR : La scène n'est pas définie !");
-        return;
-    }
+    if (!sceneRef) return;
 
     for (let i = items.length - 1; i >= 0; i--) {
         let item = items[i];
         let distance = playerBody.position.vsub(item.body.position).length();
 
-        if (distance < 1.5) { 
-            console.log("🟡 Objet collecté !");
+        if (distance < 1.5) {
             sceneRef.remove(item.mesh);
             world.removeBody(item.body);
             items.splice(i, 1);
             score++;
 
-            // ✅ Met à jour l'affichage du score
             if (scoreElement) {
                 scoreElement.innerText = `Objets collectés : ${score}`;
-            } 
+            }
         }
     }
 }
-//  Définir la position de départ du joueur
+
 const startPosition = new CANNON.Vec3(playerBody.position.x, playerBody.position.y, playerBody.position.z);
 
-//  Vérifier en continu si le joueur touche le sol
 function checkPlayerFell() {
-    if (playerBody.position.y < 4) { //  Si le joueur tombe sous une certaine hauteur
-        console.log(" Le joueur est tombé ! Retour au départ...");
+    if (playerBody.position.y < 4) {
         resetPlayerPosition();
     }
 }
 
-//  Fonction pour réinitialiser la position du joueur
 function resetPlayerPosition() {
-    playerBody.position.copy(startPosition); //  Ramène le joueur à son point de départ
-    playerBody.velocity.set(0, 0, 0); //  Annule toute vitesse pour éviter de retomber directement
-    playerBody.angularVelocity.set(0, 0, 0); //  Stopper toute rotation
+    playerBody.position.copy(startPosition);
+    playerBody.velocity.set(0, 0, 0);
+    playerBody.angularVelocity.set(0, 0, 0);
 }
 
-//  Vérifier à chaque frame si le joueur tombe
 function update() {
     checkPlayerFell();
     requestAnimationFrame(update);
 }
-update(); // Démarrer la boucle de vérification
+update();
