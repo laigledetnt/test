@@ -43,20 +43,7 @@
 <body>
     
     <button id="startButton">Démarrer</button>
-    <script type="module">
-        document.getElementById('startButton').addEventListener('click', () => {
-            history.pushState({}, '', '/game 3D'); // Change l'URL sans recharger la page
-            
-            // Charger dynamiquement le jeu sans afficher l'URL
-            fetch('main.html') // Remplace "main.html" par le fichier contenant ton jeu
-                .then(response => response.text())
-                .then(html => {
-                    document.body.innerHTML = html; // Remplace le contenu de la page
-                    import('./main.js').then(() => console.log("✅ Jeu chargé avec succès !"));
-                })
-                .catch(err => console.error("❌ Erreur de chargement :", err));
-        });
-    </script>
+    
     <script type="module">
         import './main.js';
 
