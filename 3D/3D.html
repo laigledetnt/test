@@ -194,7 +194,7 @@ loaderp.load('sky.jpg', (texture) => {
 
   if (playerOnFloor) {
  
-    const friction = -0.02; 
+    const friction = -0.03; 
     playerVelocity.x *= (1 - friction);
     playerVelocity.z *= (1 - friction);
   } else {
@@ -300,7 +300,7 @@ loaderp.load('sky.jpg', (texture) => {
 
       function controls(deltaTime) {
         
-        const speedDelta = deltaTime * (playerOnFloor ? 25 : 8);
+        const speedDelta = deltaTime * (playerOnFloor ? 30 : 8);
 
         if (keyStates['KeyW']) {
           playerVelocity.add(getForwardVector().multiplyScalar(speedDelta));
