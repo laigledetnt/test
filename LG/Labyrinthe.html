@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menu Principal</title>
+    <style>
+    body {
+      font-size: 16px;display: flex;align-items: center;flex-direction: column;height: 100vh;margin: 0; background-image: url('ppL/fond.WebP');background-size: cover; /* L'image couvre tout l'espace disponible */background-position: center ; /* Centre l'image */
+  }
+  
+  .menu-container {
+      display: flex;flex-direction: column;gap: 2em;
+      
+  }
+  
+  h1 {
+      font-size: 70px; margin-bottom: 1em;color: #000;
+  }
+  
+  button {
+    
+    background: #444;
+            font-size: 30px;
+            border-radius: 5px;
+            cursor: pointer;
+            left: 50px;
+            top: 10px;
+            color: #77b5fe
+      
+  }
+  
+  
+  button:hover {
+      background: #373a51;
+      transform: scale(1.06, 1.06);
+  }
+  .return-button {
+            position: fixed;
+            background: #444;
+            font-size: 18px;
+            border-radius: 5px;
+            cursor: pointer;
+            left: 5px;
+            color: #77b5fe
+        }
+    </style>
+    
+</head>
+
+<body>
+    
+                    
+        <button onclick="location.href='/'"class="return-button">Launcher</button>     
+        <div class="menu-container">
+        <h1>Labyrinthe</h1>
+        <button onclick="location.href='solo.html'">play solo</button>
+        <button onclick="location.href='multiVG.html'">play 2 player</button>
+        <button onclick="location.href='Labyrinthe.html'">nothing at the moment</button>
+        
+    </div>
+</body>
+</html>
