@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background: radial-gradient(blue, cyan);
+    text-align: center;
+    font-family: sans-serif;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 10px;
+}
+
+h1 {
+    font-size: min(5vmin, 40px);
+    margin-bottom: 20px;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    width: 100%;
+}
+
+table {
+    width: min(90vmin, 90%);
+    height: min(90vmin, 90%);
+    max-width: 500px;
+    max-height: 500px;
+    border-collapse: collapse;
+    margin-bottom: 15px;
+}
+
+td {
+    font-size: min(10vmin, 60px);
+    border: 3px solid white;
+    text-align: center;
+    width: 33%;
+    height: 33%;
+    aspect-ratio: 1 / 1;
+    cursor: pointer;
+}
+
+.button {
+    color: white;
+    background: blue;
+    border: none;
+    padding: 10px 20px;
+    font-size: min(3vmin, 20px);
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.button:hover {
+    background: skyblue;
+}
+
+.form__field {
+    font-size: min(3vmin, 20px);
+    padding: 8px;
+    border: 2px solid white;
+    background: transparent;
+    color: white;
+    width: min(50vmin, 200px);
+    margin: 5px;
+    text-align: center;
+}
+
+/* 📌 S'assurer que le jeu reste centré même en mode paysage */
+@media screen and (orientation: landscape) {
+    body {
+        flex-direction: row;
+        justify-content: space-evenly;
+    }
+
+    .container {
+        width: 50%;
+    }
+
+    table {
+        width: min(70vmin, 500px);
+        height: min(70vmin, 500px);
+    }
+    
+}
+   
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 id="txt_joueur">TIC TAC TOE</h1>
+        <table>
+            <tr>
+                <td id="case1" onclick="Case(1)"></td>
+                <td id="case2" onclick="Case(2)"></td>
+                <td id="case3" onclick="Case(3)"></td>
+            </tr>
+            <tr>
+                <td id="case4" onclick="Case(4)"></td>
+                <td id="case5" onclick="Case(5)"></td>
+                <td id="case6" onclick="Case(6)"></td>
+            </tr>
+            <tr>
+                <td id="case7" onclick="Case(7)"></td>
+                <td id="case8" onclick="Case(8)"></td>
+                <td id="case9" onclick="Case(9)"></td>
+            </tr>
+        </table>
+        <button class="button" id="bouton_jouer" onclick="init()">PLAY</button>
+        <input type="text" class="form__field" placeholder="PLAYER 1" id="j1" onblur="noms_joueurs()">
+        <input type="text" class="form__field" placeholder="PLAYER 2" id="j2" onblur="noms_joueurs()">
+    </div>
+
+    <script>
+        let tour = 0;
+        let joueur1_nom = "PLAYER 1";
+        let joueur2_nom = "PLAYER 2";
+        let statut_jeu = 0;
+
+        function init() {
+            tour = 0;
+            statut_jeu = 1;
+            document.getElementById("txt_joueur").innerHTML = joueur1_nom + " !";
+            document.getElementById("bouton_jouer").innerHTML = "RESTART";
+            for (let i = 1; i <= 9; i++) {
+                let cell = document.getElementById("case" + i);
+                cell.innerHTML = "";
+                cell.style.color = "white";
+            }
+        }
+
+        function Case(number) {
+            if (statut_jeu !== 1) return;
+            let cell = document.getElementById("case" + number);
+            if (cell.innerText !== "") return;
+            cell.innerHTML = tour === 0 ? "X" : "O";
+            document.getElementById("txt_joueur").innerHTML = tour === 0 ? joueur2_nom + " !" : joueur1_nom + " !";
+            tour = 1 - tour;
+            fin_jeu();
+        }
+
+        function fin_jeu() {
+            const combinaisonsGagnantes = [
+                [1, 2, 3], [4, 5, 6], [7, 8, 9],
+                [1, 4, 7], [2, 5, 8], [3, 6, 9],
+                [1, 5, 9], [3, 5, 7]
+            ];
+
+            let jeu = [];
+            for (let i = 1; i <= 9; i++) {
+                jeu[i] = document.getElementById("case" + i).innerText;
+            }
+
+            for (let combinaison of combinaisonsGagnantes) {
+                let [a, b, c] = combinaison;
+                if (jeu[a] && jeu[a] === jeu[b] && jeu[b] === jeu[c]) {
+                    statut_jeu = 3;
+                    document.getElementById("txt_joueur").innerHTML = "Winner: " + (jeu[a] === "X" ? joueur1_nom : joueur2_nom) + "!";
+                    return;
+                }
+            }
+
+            if (!jeu.includes("")) {
+                document.getElementById("txt_joueur").innerHTML = "equality!";
+                statut_jeu = 2;
+            }
+        }
+
+        function noms_joueurs() {
+            joueur1_nom = document.getElementById("j1").value || "PLAYER 1";
+            joueur2_nom = document.getElementById("j2").value || "PLAYER 2";
+        }
+    </script>
+</body>
+</html>
