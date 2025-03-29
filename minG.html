@@ -4,7 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-  * {
+      * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+* {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
@@ -21,32 +25,43 @@ body {
     justify-content: center;
     min-height: 100vh;
     padding: 10px;
+    overflow: hidden;
 }
 
 h1 {
-    font-size: min(5vmin, 40px);
-    margin-bottom: 20px;
+    font-size: min(8vmin, 40px);  /* Taille du texte du titre réactive */
+    margin-bottom: 10px; /* Réduction de l'espace sous le titre */
 }
 
 .container {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 15px;
+    gap: 10px;  /* Réduction de l'espace entre les éléments */
     width: 100%;
+    justify-content: center;
+}
+
+.game-controls {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;  /* Réduction de l'espace entre les boutons et les champs */
+    width: 100%;
+    max-width: 400px;
 }
 
 table {
-    width: min(90vmin, 90%);
-    height: min(90vmin, 90%);
+    width: 90vmin;
+    height: 90vmin;
     max-width: 500px;
     max-height: 500px;
     border-collapse: collapse;
-    margin-bottom: 15px;
+    margin-bottom: 10px;  /* Réduction de l'espace entre la grille et le texte */
 }
 
 td {
-    font-size: min(10vmin, 60px);
+    font-size: min(12vmin, 60px);  /* Taille dynamique du texte dans les cases */
     border: 3px solid white;
     text-align: center;
     width: 33%;
@@ -59,10 +74,12 @@ td {
     color: white;
     background: blue;
     border: none;
-    padding: 10px 20px;
-    font-size: min(3vmin, 20px);
+    padding: 8px 16px;
+    font-size: 3vmin;  /* Réduction de la taille des boutons */
     cursor: pointer;
     transition: 0.3s;
+    width: 100%;
+    max-width: 200px;
 }
 
 .button:hover {
@@ -70,39 +87,88 @@ td {
 }
 
 .form__field {
-    font-size: min(3vmin, 20px);
+    font-size: 4vmin;  /* Taille du texte pour les champs de saisie */
     padding: 8px;
     border: 2px solid white;
     background: transparent;
     color: white;
-    width: min(50vmin, 200px);
+    width: 100%;
+    max-width: 200px;
     margin: 5px;
     text-align: center;
 }
 
-/* 📌 S'assurer que le jeu reste centré même en mode paysage */
+/* 📌 Mode paysage */
 @media screen and (orientation: landscape) {
     body {
         flex-direction: row;
         justify-content: space-evenly;
+        align-items: flex-start;
     }
 
     .container {
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: center;
         width: 50%;
     }
 
     table {
-        width: min(70vmin, 500px);
-        height: min(70vmin, 500px);
+        width: 50vmin;
+        height: 50vmin;
+        max-width: 500px;
+        max-height: 500px;
     }
-    
+
+    .game-controls {
+        position: absolute;
+        bottom: 10px;
+        width: 90%;
+        max-width: 400px;
+        gap: 5px; /* Réduction de l'écart entre les champs et boutons */
+    }
+
+    .form__field {
+        font-size: 5vmin;
+        width: 90%;
+        max-width: 250px;
+    }
+
+    .button {
+        font-size: 5vmin;
+        width: 90%;
+        max-width: 250px;
+    }
 }
-   
+
+/* 📌 Mobile - pour écrans plus petits */
+@media screen and (max-width: 600px) {
+    table {
+        width: 80vmin;
+        height: 80vmin;
+    }
+
+    td {
+        font-size: 12vmin;
+    }
+
+    .button {
+        font-size: 5vmin;
+    }
+
+    .form__field {
+        font-size: 5vmin;
+    }
+}}
+
+
     </style>
 </head>
 <body>
     <div class="container">
         <h1 id="txt_joueur">TIC TAC TOE</h1>
+
+        <!-- Grille du jeu -->
         <table>
             <tr>
                 <td id="case1" onclick="Case(1)"></td>
@@ -120,9 +186,13 @@ td {
                 <td id="case9" onclick="Case(9)"></td>
             </tr>
         </table>
-        <button class="button" id="bouton_jouer" onclick="init()">PLAY</button>
-        <input type="text" class="form__field" placeholder="PLAYER 1" id="j1" onblur="noms_joueurs()">
-        <input type="text" class="form__field" placeholder="PLAYER 2" id="j2" onblur="noms_joueurs()">
+
+        <!-- Conteneur des contrôles sous la grille -->
+        <div class="game-controls">
+            <button class="button" id="bouton_jouer" onclick="init()">PLAY</button>
+            <input type="text" class="form__field" placeholder="PLAYER 1" id="j1" onblur="noms_joueurs()">
+            <input type="text" class="form__field" placeholder="PLAYER 2" id="j2" onblur="noms_joueurs()">
+        </div>
     </div>
 
     <script>
