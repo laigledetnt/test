@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimal-ui">
+    <title>Jeu de Saut</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            background-color: black; 
+            overflow: hidden; 
+            text-align: center; 
+            font-family: Arial, sans-serif; 
+        }
+        #gameCanvas { display: block; margin: auto; }
+        h1, p { color: white; }
+        .interactive-zone {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 50%;
+            height: 100%;
+            cursor: pointer;
+        }
+        #leftZone {
+            left: 0;
+            background-color: rgba(0, 0, 0, 0); /* zone gauche */
+        }
+        #rightZone {
+            right: 0;
+            background-color: rgba(0, 0, 0, 0); /* zone droite */
+        }
+    </style>
+</head>
+<body>
+    <h1>drop game</h1>
+    <p>Meilleur Score: <span id="bestScore">0</span></p>
+    <canvas id="gameCanvas"></canvas>
+    <div id="leftZone" class="interactive-zone"></div>
+    <div id="rightZone" class="interactive-zone"></div>
+    
+    <script>
+        const canvas = document.getElementById("gameCanvas");
+        const ctx = canvas.getContext("2d");
+        const bestScoreDisplay = document.getElementById("bestScore");
+
+        // Définir une taille de canvas optimale
+        let canvasWidth = 400;
+        let canvasHeight = 600;
+
+        // Ajuster la taille du canvas en fonction de la taille de l'écran
+        function resizeCanvas() {
+            if (window.innerWidth <= 800) {
+                // Pour les petits écrans (mobiles, tablettes), ajuster en portrait
+                canvasWidth = window.innerWidth;
+                canvasHeight = window.innerHeight;
+            } else {
+                // Sur les écrans larges, garder une taille fixe
+                canvasWidth = 400;
+                canvasHeight = 600;
+            }
+
+            canvas.width = canvasWidth;
+            canvas.height = canvasHeight;
+        }
+
+        resizeCanvas(); // Initialisation du resize
+        window.addEventListener('resize', resizeCanvas); // Redimensionner le canvas en cas de changement de taille
+
+        let player = { x: canvas.width / 2 - 10, y: canvas.height - 50, width: 20, height: 20, velocityY: 0, gravity: 0.2, jumpPower: -10, canJump: true };
+        let platforms = [];
+        let coins = [];
+        let score = 0;
+        let bestScore = 0;
+        let keys = {};
+
+        // Détection de la zone touchée pour le déplacement avec "mousedown" et "mouseup"
+        document.getElementById('leftZone').addEventListener('mousedown', () => keys["ArrowLeft"] = true);
+        document.getElementById('leftZone').addEventListener('mouseup', () => keys["ArrowLeft"] = false);
+        document.getElementById('leftZone').addEventListener('mouseleave', () => keys["ArrowLeft"] = false);
+
+        document.getElementById('rightZone').addEventListener('mousedown', () => keys["ArrowRight"] = true);
+        document.getElementById('rightZone').addEventListener('mouseup', () => keys["ArrowRight"] = false);
+        document.getElementById('rightZone').addEventListener('mouseleave', () => keys["ArrowRight"] = false);
+
+        function generatePlatform(yOffset) {
+            let x = Math.random() * (canvas.width - 50);
+            let newPlatform = { x: x, y: yOffset, size: 50 };
+            platforms.push(newPlatform);
+
+            if (Math.random() < 0.4) {
+                let coinX = newPlatform.x + (newPlatform.size / 2 - 5);
+                let coinY = newPlatform.y - 15;
+                coins.push({ x: coinX, y: coinY, size: 10 });
+            }
+        }
+
+        function initializePlatforms() {
+            platforms = [];
+            for (let i = 0; i < 6; i++) {
+                generatePlatform(canvas.height - i * 100);
+            }
+        }
+
+        function update() {
+            if (keys["ArrowLeft"]) player.x -= 5;
+            if (keys["ArrowRight"]) player.x += 5;
+
+            player.velocityY += player.gravity;
+            player.y += player.velocityY;
+
+            if (player.y > canvas.height || player.y < 0) resetGame();  // Game reset when player hits the ceiling or bottom
+
+            platforms.forEach(platform => {
+                if (
+                    player.y + player.height >= platform.y &&
+                    player.y + player.height <= platform.y + platform.size &&
+                    player.x + player.width > platform.x &&
+                    player.x < platform.x + platform.size &&
+                    player.velocityY > 0
+                ) {
+                    player.velocityY = 0;
+                    player.y = platform.y - player.height;
+                }
+            });
+
+            coins.forEach((coin, index) => {
+                if (
+                    player.x < coin.x + coin.size &&
+                    player.x + player.width > coin.x &&
+                    player.y < coin.y + coin.size &&
+                    player.y + player.height > coin.y
+                ) {
+                    coins.splice(index, 1);
+                    score += 10;
+                }
+            });
+
+            platforms.forEach(platform => platform.y -= 3);
+            coins.forEach(coin => coin.y -= 3);
+
+            if (platforms.length === 0 || platforms[platforms.length - 1].y < canvas.height - 100) {
+                generatePlatform(canvas.height);
+            }
+
+            platforms = platforms.filter(platform => platform.y > -50);
+            coins = coins.filter(coin => coin.y > -10);
+        }
+
+        function draw() {
+            ctx.fillStyle = "skyblue"; 
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            ctx.fillStyle = "blue";
+            ctx.fillRect(player.x, player.y, player.width, player.height);
+
+            ctx.fillStyle = "white";
+            platforms.forEach(platform => ctx.fillRect(platform.x, platform.y, platform.size, platform.size));  // Revert to cube platforms
+
+            ctx.fillStyle = "gold";
+            coins.forEach(coin => ctx.fillRect(coin.x, coin.y, coin.size, coin.size));
+
+            ctx.fillStyle = "black";
+            ctx.fillText("Score: " + score, 10, 20);
+        }
+
+        function resetGame() {
+            if (score > bestScore) {
+                bestScore = score;
+                bestScoreDisplay.textContent = bestScore;
+            }
+
+            player.y = canvas.height - 50;
+            player.velocityY = 0;
+            score = 0;
+            initializePlatforms();
+            coins = [];
+        }
+
+        function gameLoop() {
+            update();
+            draw();
+            requestAnimationFrame(gameLoop);
+        }
+
+        initializePlatforms();
+        gameLoop();
+    </script>
+</body>
+</html>
