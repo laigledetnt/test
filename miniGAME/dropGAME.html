@@ -21,6 +21,7 @@
             width: 50%;
             height: 100%;
             cursor: pointer;
+            z-index: 1; /* Assure que les zones soient au-dessus du canvas */
         }
         #leftZone {
             left: 0;
@@ -45,21 +46,13 @@
         const bestScoreDisplay = document.getElementById("bestScore");
 
         // Définir une taille de canvas optimale
-        let canvasWidth = 400;
-        let canvasHeight = 600;
+        let canvasWidth = window.innerWidth;
+        let canvasHeight = window.innerHeight;
 
         // Ajuster la taille du canvas en fonction de la taille de l'écran
         function resizeCanvas() {
-            if (window.innerWidth <= 800) {
-                // Pour les petits écrans (mobiles, tablettes), ajuster en portrait
-                canvasWidth = window.innerWidth;
-                canvasHeight = window.innerHeight;
-            } else {
-                // Sur les écrans larges, garder une taille fixe
-                canvasWidth = 400;
-                canvasHeight = 600;
-            }
-
+            canvasWidth = window.innerWidth;
+            canvasHeight = window.innerHeight;
             canvas.width = canvasWidth;
             canvas.height = canvasHeight;
         }
@@ -72,16 +65,21 @@
         let coins = [];
         let score = 0;
         let bestScore = 0;
-        let keys = {};
+        let keys = { left: false, right: false };
 
-        // Détection de la zone touchée pour le déplacement avec "mousedown" et "mouseup"
-        document.getElementById('leftZone').addEventListener('mousedown', () => keys["ArrowLeft"] = true);
-        document.getElementById('leftZone').addEventListener('mouseup', () => keys["ArrowLeft"] = false);
-        document.getElementById('leftZone').addEventListener('mouseleave', () => keys["ArrowLeft"] = false);
+        // Gestion du déplacement avec les événements tactiles
+        document.getElementById('leftZone').addEventListener('touchstart', () => keys.left = true);
+        document.getElementById('leftZone').addEventListener('touchend', () => keys.left = false);
+        document.getElementById('rightZone').addEventListener('touchstart', () => keys.right = true);
+        document.getElementById('rightZone').addEventListener('touchend', () => keys.right = false);
 
-        document.getElementById('rightZone').addEventListener('mousedown', () => keys["ArrowRight"] = true);
-        document.getElementById('rightZone').addEventListener('mouseup', () => keys["ArrowRight"] = false);
-        document.getElementById('rightZone').addEventListener('mouseleave', () => keys["ArrowRight"] = false);
+        // Empêcher le défilement pendant l'interaction
+        document.getElementById('leftZone').addEventListener('touchmove', (e) => {
+            e.preventDefault();
+        });
+        document.getElementById('rightZone').addEventListener('touchmove', (e) => {
+            e.preventDefault();
+        });
 
         function generatePlatform(yOffset) {
             let x = Math.random() * (canvas.width - 50);
@@ -103,8 +101,8 @@
         }
 
         function update() {
-            if (keys["ArrowLeft"]) player.x -= 5;
-            if (keys["ArrowRight"]) player.x += 5;
+            if (keys.left) player.x -= 5;
+            if (keys.right) player.x += 5;
 
             player.velocityY += player.gravity;
             player.y += player.velocityY;
