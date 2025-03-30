@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Game Launcher</title>
@@ -12,23 +14,26 @@
        
             <p class="text-lg mb-4">Choose a game to start playing:</p>
             <div class="space-y-4">
-               <button 
-                    class="hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition duration-200 w-full" 
-                    onclick="launchGame('3D/3D.html')">
-                    3D game
-                </button>
-                
-            <button 
+                <button 
                     class="hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition duration-200 w-full" 
                     onclick="launchGame('LG/Labyrinthe.html')">
                     maze
                 </button>
-            <button 
+                <button 
                     class="hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition duration-200 w-full" 
-                    onclick="launchGame('minG.html')">
+                    onclick="launchGame('3D/3D.html')">
+                    jump 3D
+                </button>
+                <button 
+                    class="hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition duration-200 w-full" 
+                    onclick="launchGame('miniGAME/TTT.html')">
                     tic tac toe 
-                </button>       
-            
+                </button>
+                <button 
+                    class="hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition duration-200 w-full" 
+                    onclick="launchGame('miniGAME/dropGAME.html')">
+                    drop game
+                </button>
             </div>
         </div>
         
@@ -38,5 +43,6 @@
             window.location.href = gameUrl;
         }
     </script>
+
 </body>
 </html>
