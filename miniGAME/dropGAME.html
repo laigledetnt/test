@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimal-ui">
-    <meta name="apple-mobile-web-app-capable" content="no"> <!-- Désactiver le zoom sur les appareils Apple -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Jeu de Saut</title>
     <style>
@@ -13,11 +13,11 @@
             overflow: hidden; 
             text-align: center; 
             font-family: Arial, sans-serif; 
-            -webkit-user-select: none; /* Désactive la sélection de texte */
-            -moz-user-select: none;    /* Désactive la sélection de texte */
-            -ms-user-select: none;     /* Désactive la sélection de texte */
-            user-select: none;         /* Désactive la sélection de texte */
-            touch-action: none;        /* Désactive les actions tactiles de zoom et défilement */
+            -webkit-user-select: none; 
+            -moz-user-select: none;    
+            -ms-user-select: none;     
+            user-select: none;         
+            touch-action: manipulation; /* Désactiver le zoom et défilement sur mobile */
         }
         #gameCanvas { display: block; margin: auto; }
         h1, p { color: white; }
@@ -29,15 +29,14 @@
             height: 100%;
             cursor: pointer;
             z-index: 1; /* Assure que les zones soient au-dessus du canvas */
-            touch-action: manipulation; /* Permet d'interagir sans activer le zoom */
         }
         #leftZone {
             left: 0;
-            background-color: rgba(0, 0, 0, 0); /* zone gauche */
+            background-color: rgba(0, 0, 0, 0);
         }
         #rightZone {
             right: 0;
-            background-color: rgba(0, 0, 0, 0); /* zone droite */
+            background-color: rgba(0, 0, 0, 0);
         }
     </style>
 </head>
@@ -53,7 +52,6 @@
         const ctx = canvas.getContext("2d");
         const bestScoreDisplay = document.getElementById("bestScore");
 
-        // Définir une taille de canvas optimale
         let canvasWidth = window.innerWidth;
         let canvasHeight = window.innerHeight;
 
@@ -123,7 +121,7 @@
             player.velocityY += player.gravity;
             player.y += player.velocityY;
 
-            if (player.y > canvas.height || player.y < 0) resetGame();  // Game reset when player hits the ceiling or bottom
+            if (player.y > canvas.height || player.y < 0) resetGame();
 
             platforms.forEach(platform => {
                 if (
@@ -169,7 +167,7 @@
             ctx.fillRect(player.x, player.y, player.width, player.height);
 
             ctx.fillStyle = "white";
-            platforms.forEach(platform => ctx.fillRect(platform.x, platform.y, platform.size, platform.size));  // Revert to cube platforms
+            platforms.forEach(platform => ctx.fillRect(platform.x, platform.y, platform.size, platform.size)); 
 
             ctx.fillStyle = "gold";
             coins.forEach(coin => ctx.fillRect(coin.x, coin.y, coin.size, coin.size));
