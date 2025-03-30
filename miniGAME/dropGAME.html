@@ -29,6 +29,7 @@
             height: 100%;
             cursor: pointer;
             z-index: 1; /* Assure que les zones soient au-dessus du canvas */
+            touch-action: manipulation; /* Permet d'interagir sans activer le zoom */
         }
         #leftZone {
             left: 0;
@@ -88,8 +89,11 @@
             e.preventDefault();
         });
 
-        // Désactiver le zoom lors d'un double clic
-        document.body.addEventListener('dblclick', function (e) {
+        // Désactiver le zoom lors d'un double clic sur la zone
+        document.getElementById('leftZone').addEventListener('dblclick', function (e) {
+            e.preventDefault();
+        });
+        document.getElementById('rightZone').addEventListener('dblclick', function (e) {
             e.preventDefault();
         });
 
