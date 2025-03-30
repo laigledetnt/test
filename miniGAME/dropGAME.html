@@ -88,6 +88,11 @@
             e.preventDefault();
         });
 
+        // Désactiver le zoom lors d'un double clic
+        document.body.addEventListener('dblclick', function (e) {
+            e.preventDefault();
+        });
+
         function generatePlatform(yOffset) {
             let x = Math.random() * (canvas.width - 50);
             let newPlatform = { x: x, y: yOffset, size: 50 };
