@@ -297,7 +297,7 @@ loaderp.load('sky.jpg', (texture) => {
 
       function controls(deltaTime) {
         
-        const speedDelta = deltaTime * (playerOnFloor ? 17: 8);
+        const speedDelta = deltaTime * (playerOnFloor ? 20: 10);
 
         if (keyStates['KeyW']) {
           playerVelocity.add(getForwardVector().multiplyScalar(speedDelta));
