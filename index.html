@@ -30,12 +30,11 @@
 
     <script type="module">
 import * as THREE from 'three';
-import Stats from 'three/addons/libs/stats.module.js';
-import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-import { Octree } from 'three/addons/math/Octree.js';
-import { OctreeHelper } from 'three/addons/helpers/OctreeHelper.js';
-import { Capsule } from 'three/addons/math/Capsule.js';
-import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { Octree } from 'three/examples/jsm/math/Octree.js';
+import { Capsule } from 'three/examples/jsm/math/Capsule.js';
+import Stats from 'three/examples/jsm/libs/stats.module.js';
+import { OctreeHelper } from 'three/examples/jsm/helpers/OctreeHelper.js';
 
 const clock = new THREE.Clock();
 
@@ -75,6 +74,7 @@ loaderp.load('sky.jpg', (texture) => {
       directionalLight.shadow.bias = -0.00006;
       scene.add(directionalLight);
       
+    //  scene.fog = new THREE.FogExp2(0xaaaaaa, 0.008);
 
       const container = document.getElementById('container');
 
@@ -90,7 +90,7 @@ loaderp.load('sky.jpg', (texture) => {
       
      
 
-      const GRAVITY = 25;
+      const GRAVITY = 40;
 
       const NUM_SPHERES = 1;
       const SPHERE_RADIUS = 0.2;
@@ -185,7 +185,7 @@ loaderp.load('sky.jpg', (texture) => {
       }
 
       function updatePlayer(deltaTime) {
-        let damping = -0.07; 
+        let damping = -0.08; 
 
 
 
@@ -196,7 +196,7 @@ loaderp.load('sky.jpg', (texture) => {
     playerVelocity.z *= (1 - friction);
   } else {
     playerVelocity.y -= GRAVITY * deltaTime;
-    damping *= 0.1; 
+    damping *= 0.2; 
   }
   playerVelocity.addScaledVector(playerVelocity, damping);
 
@@ -297,7 +297,7 @@ loaderp.load('sky.jpg', (texture) => {
 
       function controls(deltaTime) {
         
-        const speedDelta = deltaTime * (playerOnFloor ? 20: 10);
+        const speedDelta = deltaTime * (playerOnFloor ? 20: 15);
 
         if (keyStates['KeyW']) {
           playerVelocity.add(getForwardVector().multiplyScalar(speedDelta));
@@ -313,7 +313,7 @@ loaderp.load('sky.jpg', (texture) => {
         }
         if (playerOnFloor) {
           if (keyStates['Space']) {
-            playerVelocity.y = 17;
+            playerVelocity.y = 23;
           }
         }
       }
@@ -350,6 +350,7 @@ const loader = new GLTFLoader();
       let jumpers = [];
       let checkpoints = [];
       let lastCheckpoint = new THREE.Vector3(0, 10, 0); 
+      
 loader.load('world.glb', (gltf) => {
     scene.add(gltf.scene);
     gltf.scene.position.set(0, 3, 0);
@@ -382,22 +383,23 @@ function teleportPlayerIfOob() {
 // const stats = new Stats();
 // document.body.appendChild(stats.dom);
 
-      function animate() {
+      function animate()  {
         // stats.begin();
-    const deltaTime = Math.min(0.05, clock.getDelta()) / STEPS_PER_FRAME;
+    const deltaTime = Math.min(0.05, clock.getDelta());
 
-    for (let i = 0; i < STEPS_PER_FRAME; i++) {
-        controls(deltaTime);
-        updatePlayer(deltaTime);
-        updateSpheres(deltaTime);
-        teleportPlayerIfOob();
-        JumperCollision();
-        JumperCollisionG();
-        Checkpoint();     
-    }
+    controls(deltaTime);
+    updatePlayer(deltaTime);
+    updateSpheres(deltaTime);
+
+    Checkpoint();
+    JumperCollision();
+    JumperCollisionG();
+    teleportPlayerIfOob();
+
     renderer.render(scene, camera);
     // stats.end();
 }
+
     </script>
   </body>
 </html>
