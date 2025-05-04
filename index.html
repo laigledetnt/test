@@ -376,7 +376,7 @@ loader.load('world.glb', (gltf) => {
 function teleportPlayerIfOob() {
     if (camera.position.y <= 1) {
         playerCollider.start.copy(lastCheckpoint).add(new THREE.Vector3(0, 0.35, 0));
-        playerCollider.end.copy(lastCheckpoint).add(new THREE.Vector3(0, 2, 0));
+        playerCollider.end.copy(lastCheckpoint).add(new THREE.Vector3(0, 3, 0));
         camera.position.copy(playerCollider.end);
     }
 }
