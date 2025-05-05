@@ -344,11 +344,22 @@ function JumperCollisionG() {
         }
     });
 }
+function TeleporterCollision() {
+    for (const { box, target } of teleporters) {
+        if (playerCollider.intersectsBox(box)) {
+            playerCollider.start.copy(target).add(new THREE.Vector3(0, 0.35, 0));
+            playerCollider.end.copy(target).add(new THREE.Vector3(0, 3, 0));
+            camera.position.copy(playerCollider.end);
+            break; 
+        }
+    }
+}
 
 const loader = new GLTFLoader();
       let jumpersG = []; 
       let jumpers = [];
       let checkpoints = [];
+      let teleporters = [];
       let lastCheckpoint = new THREE.Vector3(0, 10, 0); 
       
 loader.load('world.glb', (gltf) => {
@@ -369,6 +380,21 @@ loader.load('world.glb', (gltf) => {
             const box = new THREE.Box3().setFromObject(child);
             jumpersG.push(box);  
         }
+        if (child.isMesh && child.name.startsWith("TeleporterTo_")) {
+    const parts = child.name.split("_");
+    if (parts.length === 4) {
+        const toNumber = (str) => parseFloat(str.replace("m", "-"));
+
+        const x = toNumber(parts[1]);
+        const y = toNumber(parts[2]);
+        const z = toNumber(parts[3]);
+
+        const box = new THREE.Box3().setFromObject(child);
+        const target = new THREE.Vector3(x, y, z);
+
+        teleporters.push({ box, target });
+    }
+}
         
     });
        
@@ -397,6 +423,7 @@ let sky;
     Checkpoint();
     JumperCollision();
     JumperCollisionG();
+    TeleporterCollision();
     teleportPlayerIfOob();
 
     renderer.render(scene, camera);
